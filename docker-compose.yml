@@ -29,11 +29,26 @@ services:
     depends_on:
       - rabbit
       - db
+      - socket
     links:
       - rabbit:rabbit
       - db:db
+      - socket:socket
     ports:
       - 8080:8080
+    restart: unless-stopped
+
+  socket:
+    container_name: rain-socket
+    build:
+      context: .
+      dockerfile: Socketdocker
+    depends_on:
+      - db
+    links:
+      - db:db
+    ports:
+      - 7777:7777
     restart: unless-stopped
 
   worker:
@@ -60,7 +75,29 @@ services:
       - postgres_lib:/var/lib/postgresql
     restart: unless-stopped
 
+  monitor:
+    image: google/cadvisor
+    container_name: rain-monitor
+    ports:
+      - 7000:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+  registry:
+    image: registry:2
+    container_name: rain-registry
+    ports:
+      - 5000:5000
+    volumes:
+      - registry-data:/var/lib/registry
+    restart: unless-stopped
+
 volumes:
   postgres_volume:
   postgres_log:
   postgres_lib:
+  registry-data:

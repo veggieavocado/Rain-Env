@@ -3,5 +3,6 @@ RUN npm install -g pm2
 COPY package.json /src/package.json
 RUN cd /src; npm install
 COPY . /src
+EXPOSE 7777
 WORKDIR /src
-CMD pm2 start --no-daemon /src/js-tasks/tasks.js
+CMD pm2 start --no-daemon socket.js
