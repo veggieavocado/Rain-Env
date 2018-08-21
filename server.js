@@ -68,11 +68,13 @@ app.post('/update', async (req, res) => {
   const date = req.body.date;
   const app = req.body.app;
   const result = req.body.result;
+  const deploy = req.body.deploy;
   const data = {
     type,
     date,
     app,
     result,
+    deploy,
   };
   await updateData(client, data);
   res.status(201);

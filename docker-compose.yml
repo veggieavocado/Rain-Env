@@ -57,13 +57,11 @@ services:
       context: .
       dockerfile: Workerdocker
     depends_on:
-      - db
       - rabbit
-      - app
+      - db
     links:
-      - db:db
       - rabbit:rabbit
-      - app:app
+      - db:db
     restart: unless-stopped
 
   db:

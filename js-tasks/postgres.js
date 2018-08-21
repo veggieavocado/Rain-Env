@@ -2,12 +2,12 @@
 const initTable = async (client) => {
   // DB 설정 부분
   const testresultQuery = client.query(
-      'CREATE TABLE testresult(date VARCHAR(40) not null, app VARCHAR(20) not null, result VARCHAR(10) not null);'
+      'CREATE TABLE testresult(date VARCHAR(40) not null, app VARCHAR(20) not null, result VARCHAR(10) not null, deploy VARCHAR(10) not null);'
   ).then(() => { console.log('testresult 테이블 생성 완료'); })
    .catch((error) => { console.log('testresult 테이블이 이미 생성되어 있습니다'); });
 
   const buildstateQuery = client.query(
-      'CREATE TABLE buildresult(date VARCHAR(40) not null, app VARCHAR(20) not null, result VARCHAR(10) not null);'
+      'CREATE TABLE buildresult(date VARCHAR(40) not null, app VARCHAR(20) not null, result VARCHAR(10) not null, deploy VARCHAR(10) not null);'
   ).then(() => { console.log('buildresult 테이블 생성 완료'); })
    .catch((error) => { console.log('buildresult 테이블이 이미 생성되어 있습니다'); });
 };
@@ -22,7 +22,7 @@ const initTrigger = async (client) => {
         LANGUAGE plpgsql
         AS $$
     BEGIN
-        PERFORM pg_notify('testresult'::TEXT, 'testresult' || '|' || NEW.app::TEXT || '|' || NEW.result::TEXT);
+        PERFORM pg_notify('testresult'::TEXT, 'testresult' || '|' || NEW.app::TEXT || '|' || NEW.result::TEXT || '|' || NEW.deploy::TEXT);
         RETURN NULL;
     END;
     $$;
@@ -38,7 +38,7 @@ const initTrigger = async (client) => {
         LANGUAGE plpgsql
         AS $$
     BEGIN
-        PERFORM pg_notify('buildresult'::TEXT, 'buildresult' || '|' || NEW.app::TEXT || '|' || NEW.result::TEXT);
+        PERFORM pg_notify('buildresult'::TEXT, 'buildresult' || '|' || NEW.app::TEXT || '|' || NEW.result::TEXT || '|' || NEW.deploy::TEXT);
         RETURN NULL;
     END;
     $$;
@@ -56,9 +56,10 @@ const updateData = async (client, data) => {
   console.log(data.date);
   console.log(data.app);
   console.log(data.result);
+  console.log(data.deploy);
   const updateQuery = client.query(
-    'INSERT INTO ' + data.type + ' (date, app, result) VALUES ($1, $2, $3);',
-    [data.date, data.app, data.result]
+    'INSERT INTO ' + data.type + ' (date, app, result, deploy) VALUES ($1, $2, $3, $4);',
+    [data.date, data.app, data.result, data.deploy]
   ).then(() => { console.log('데이터 업데이트를 성공적으로 하였습니다'); })
    .catch((error) => { console.log(error); });
 };
