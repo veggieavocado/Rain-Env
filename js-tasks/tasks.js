@@ -88,6 +88,7 @@ amqp.connect('amqp://admin:admin123@rabbit:5672//', (err, conn) => {
           });
 
           // 3. 깃허브 리포가 클론되어 있는 폴더로 들어가 git pull해준다.
+          
           // 4. 깃 풀이 완료되면 docker-compose up -d --build를 실행시켜서 코드를 업데이트시켜준다.
         } else if (serverName == 'avocado-api-server') {
           // pass
